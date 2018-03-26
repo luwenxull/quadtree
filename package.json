@@ -1,6 +1,6 @@
 {
   "name": "@luwenxull/quadtree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "repository": "https://github.com/luwenxull/quadtree",
   "author": "luwenxull <992273307@qq.com>",
@@ -13,7 +13,5 @@
     "babel-preset-env": "^1.6.1",
     "jest": "^22.4.3"
   },
-  "dependencies": {
-    "lodash": "^4.17.5"
-  }
+  "dependencies": {}
 }

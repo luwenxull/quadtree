@@ -1,4 +1,6 @@
-import isNumber from 'lodash/isNumber'
+function isValidNum(v) {
+  return typeof v === 'number' && !Number.isNaN(v)
+}
 
 export default class TreeNode {
   // TODO 显示最大depth
@@ -29,7 +31,7 @@ export default class TreeNode {
    * @param point
    */
   add(point) {
-    if (isNumber(point.x) && isNumber(point.y)) {
+    if (isValidNum(point.x) && isValidNum(point.y)) {
       if (this.isInArea(point.x, point.y)) {
         const dimension = this.whichDimension(point.x, point.y)
         if (dimension === 0 /*添加给自己*/) {
