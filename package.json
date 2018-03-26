@@ -1,12 +1,13 @@
 {
-  "name": "quadtree",
+  "name": "@luwenxull/quadtree",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/luwenxull/quadtree",
   "author": "luwenxull <992273307@qq.com>",
   "license": "MIT",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "pub": "npm publish --access=public"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
