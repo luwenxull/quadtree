@@ -15,11 +15,13 @@ export default class Quadtree {
   /**
    * 添加数据
    * @param data
+   * @return {Quadtree}
    */
   add(data) {
     [].concat(data).forEach(d => {
       this.root.add(d)
     })
+    return this
   }
 
   /**

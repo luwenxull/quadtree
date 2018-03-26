@@ -15,9 +15,12 @@ export default class TreeNode {
     this.height = height
     this.depth = depth
     this.max = 4 // childrenData 最大程度
+    // 节点未曾split时，暂存的子节点数据
     this.childrenData = []
     this.children = null // 子节点
-    this.selfData = [] // 自身数据
+    // 自身数据
+    // 正好落在以自身中心点为原点的坐标轴上
+    this.selfData = []
     this.center = [this.bottom_left[0] + width / 2, this.bottom_left[1] + height / 2]
   }
 
@@ -30,14 +33,18 @@ export default class TreeNode {
       if (this.isInArea(point.x, point.y)) {
         const dimension = this.whichDimension(point.x, point.y)
         if (dimension === 0 /*添加给自己*/) {
-          this.selfData.push(point)
+          this.selfData.push(Object.assign(point, {
+            __belong : this
+          }))
         } else {
           if (this.children) {
             // 交给子节点处理
             this.children[dimension - 1].add(point)
           } else {
             // 暂时添加到自己的数据集
-            this.childrenData.push(point)
+            this.childrenData.push(Object.assign(point, {
+              __belong: this // 子节点的add方法会更新这个字段
+            }))
             if (this.childrenData.length > this.max) {
               this.split()
             }
@@ -104,6 +111,9 @@ export default class TreeNode {
    * @param callback
    */
   visit(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('Visit callback must be a function')
+    }
     const toBeContinue = callback(this)
     if (this.children && toBeContinue) {
       this.children.forEach(child => {
@@ -129,6 +139,6 @@ export default class TreeNode {
    * @return {Array}
    */
   getData() {
-    return this.selfData
+    return [].concat(this.selfData).concat(this.childrenData)
   }
 }

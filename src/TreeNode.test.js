@@ -22,14 +22,17 @@ test('init children', () => {
 
 test('add', () => {
   const node = new TreeNode([0, 0], 100, 100, 0)
-  node.add({x: 10, y: 10})
+  const p = { x: 10, y: 10 }
+  node.add(p)
   node.add({x: 60, y: 60})
   node.add({x: 10, y: 60})
   node.add({x: 60, y: 10})
   node.add({x: 10000, y: 0})
   expect(node.childrenData.length).toBe(4)
+  expect(p.__belong).toBe(node)
   node.add({x: 10, y: 10})
   expect(node.childrenData.length).toBe(0)
   expect(node.children.length).toBe(4)
   expect(node.children[2].childrenData.length).toBe(2)
+  expect(p.__belong).toBe(node.children[2])
 })
