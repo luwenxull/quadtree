@@ -31,4 +31,16 @@ export default class Quadtree {
   visit(callback) {
     this.root.visit(callback)
   }
+
+  /**
+   * 更新某个位置对应的点
+   * @param point
+   */
+  update(point) {
+    const node = point.__belong
+    if (node) {
+      node.remove(point)
+    }
+    this.add(point)
+  }
 }

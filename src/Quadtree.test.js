@@ -49,3 +49,14 @@ test('visit', () => {
   tree.visit(realFn)
   expect(all.length).toBe(2)
 })
+
+test('update', () => {
+  const fn = jest.fn()
+  const tree = new Quadtree(100, 100)
+  const p = {x: 10, y: 10}
+  const p2 = {x: 40, y: 60}
+  tree.add([p, p2])
+  p.x = 20
+  tree.update(p)
+  expect(tree.root.childrenData.length).toBe(2)
+})

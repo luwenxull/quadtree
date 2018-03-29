@@ -29,6 +29,7 @@ export default class TreeNode {
   /**
    * 添加数据
    * @param point
+   * @return {TreeNode}
    */
   add(point) {
     if (isValidNum(point.x) && isValidNum(point.y)) {
@@ -36,7 +37,7 @@ export default class TreeNode {
         const dimension = this.whichDimension(point.x, point.y)
         if (dimension === 0 /*添加给自己*/) {
           this.selfData.push(Object.assign(point, {
-            __belong : this
+            __belong: this
           }))
         } else {
           if (this.children) {
@@ -56,6 +57,7 @@ export default class TreeNode {
     } else {
       throw new Error(`x and y must be number!`)
     }
+    return this
   }
 
   /**
@@ -142,5 +144,33 @@ export default class TreeNode {
    */
   getData() {
     return [].concat(this.selfData).concat(this.childrenData)
+  }
+
+  /**
+   * 移除某个点
+   * 基于引用
+   * @param point
+   */
+  remove(point) {
+    let removeIndex = null
+    for (let i = 0; i < this.selfData.length; i++) {
+      if (this.selfData[i] === point) {
+        removeIndex = i
+        break
+      }
+    }
+    if (removeIndex !== null) {
+      this.selfData.splice(removeIndex, 1)
+    } else {
+      for (let i = 0; i < this.childrenData.length; i++) {
+        if (this.childrenData[i] === point) {
+          removeIndex = i
+          break
+        }
+      }
+      if (removeIndex !== null) {
+        this.childrenData.splice(removeIndex, 1)
+      }
+    }
   }
 }
