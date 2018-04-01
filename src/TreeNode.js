@@ -7,14 +7,11 @@ export default class TreeNode {
   /**
    *
    * @param bottom_left 左下角
-   * @param width 长
-   * @param height 宽
+   * @param top_right 右上角
    * @param depth 深度
    */
-  constructor(bottom_left, width, height, depth) {
-    this.bottom_left = bottom_left
-    this.width = width
-    this.height = height
+  constructor(bottom_left, top_right, depth) {
+    this.setBaseSpaceData(bottom_left, top_right)
     this.depth = depth
     this.max = 4 // childrenData 最大程度
     // 节点未曾split时，暂存的子节点数据
@@ -23,7 +20,19 @@ export default class TreeNode {
     // 自身数据
     // 正好落在以自身中心点为原点的坐标轴上
     this.selfData = []
-    this.center = [this.bottom_left[0] + width / 2, this.bottom_left[1] + height / 2]
+  }
+
+  /**
+   * 设置边界，中心，宽高
+   * @param bottom_left
+   * @param top_right
+   */
+  setBaseSpaceData(bottom_left, top_right) {
+    this.bottom_left = bottom_left
+    this.top_right = top_right
+    this.center = [(bottom_left[0] + top_right[0]) / 2, (bottom_left[1] + top_right[1]) / 2]
+    this.width = top_right[0] - bottom_left[0]
+    this.height = top_right[1] - bottom_left[1]
   }
 
   /**
@@ -77,13 +86,11 @@ export default class TreeNode {
    * 初始化子节点
    */
   initChildren() {
-    const halfWidth = this.width / 2,
-      halfHeight = this.height / 2
     this.children = [
-      new TreeNode(this.center, halfWidth, halfHeight, this.depth + 1),
-      new TreeNode([this.center[0], this.bottom_left[1]], halfWidth, halfHeight, this.depth + 1),
-      new TreeNode(this.bottom_left, halfWidth, halfHeight, this.depth + 1),
-      new TreeNode([this.bottom_left[0], this.center[1]], halfWidth, halfHeight, this.depth + 1),
+      new TreeNode(this.center, this.top_right, this.depth + 1),
+      new TreeNode([this.center[0], this.bottom_left[1]], [this.top_right[0], this.center[1]], this.depth + 1),
+      new TreeNode(this.bottom_left, this.center, this.depth + 1),
+      new TreeNode([this.bottom_left[0], this.center[1]], [this.center[0], this.top_right[1]], this.depth + 1),
     ]
   }
 
@@ -139,13 +146,25 @@ export default class TreeNode {
 
   /**
    * 获取自身的数据集
-   * 不包含子元素
+   * 不包含子节点
    * @return {Array}
    */
   getData() {
     return [].concat(this.selfData).concat(this.childrenData)
   }
 
+  /**
+   * 获取所有是元素
+   * 包括子节点的
+   */
+  getAllData() {
+    let all = this.getData()
+    this.visit(node => {
+      all = all.concat(node.getData())
+      return true
+    })
+  }
+  
   /**
    * 移除某个点
    * 基于引用
@@ -172,5 +191,20 @@ export default class TreeNode {
         this.childrenData.splice(removeIndex, 1)
       }
     }
+  }
+
+  /**
+   * 扩展
+   * @param x
+   * @param y
+   */
+  extent(x, y) {
+    let [minX, minY] = this.bottom_left
+    let [maxX, maxY] = this.top_right
+    minX = Math.min(minX, x)
+    minY = Math.min(minY, y)
+    maxX = Math.max(maxX, x)
+    maxY = Math.max(maxY, y)
+    this.setBaseSpaceData([minX, minY], [maxX, maxY])
   }
 }

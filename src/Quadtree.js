@@ -9,19 +9,45 @@ export default class Quadtree {
    */
   constructor(width, height, maxDepth) {
     this.maxDepth = maxDepth
-    this.root = new TreeNode([0, 0], width, height, 0)
+    this.boundary = [new Array(2), new Array(2)]
+    // this.root = new TreeNode([0, 0], width, height, 0)
+  }
+
+  /**
+   * 设置边界
+   * @param datas
+   */
+  setRootNode(datas) {
+    if (datas.length) {
+      const first = datas[0]
+      let minX = first.x, maxX = first.x, minY = first.y, maxY = first.y
+      for (let i = 1, l = datas.length; i < l; i++) {
+        minX = Math.min(minX, datas[i].x)
+        maxX = Math.max(maxX, datas[i].x)
+        minY = Math.min(minY, datas[i].y)
+        maxY = Math.max(maxY, datas[i].y)
+      }
+      this.boundary = [[minX, minY], [maxX, maxY]]
+      this.root = new TreeNode(this.boundary[0], this.boundary[1])
+    }
   }
 
   /**
    * 添加数据
-   * @param data
+   * 这个方法会重置当前的root tree
+   * @param datas
    * @return {Quadtree}
    */
-  add(data) {
-    [].concat(data).forEach(d => {
-      this.root.add(d)
-    })
+  addAll(datas) {
+    this.setRootNode(datas)
+    for (let i = 0, l = datas.length; i < l; i++) {
+      this.root.add(datas[i])
+    }
     return this
+  }
+
+  add(data) {
+    this.root.add(data)
   }
 
   /**
