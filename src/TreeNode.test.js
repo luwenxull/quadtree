@@ -15,6 +15,14 @@ test('which dimension', () => {
   expect(node.whichDimension(10, 60)).toBe(4)
   expect(node.whichDimension(10, 10)).toBe(3)
   expect(node.whichDimension(50, 0)).toBe(0)
+  expect(node.whichDimension(10000, 100000)).toBe(1)
+})
+
+test('is in area', () => {
+  const node = new TreeNode([0, 0], [100, 100])
+  expect(node.isInArea(50, 50)).toBe(true)
+  expect(node.isInArea(110, 50)).toBe(false)
+  expect(node.isInArea(110, 50, 10)).toBe(true)
 })
 
 test('init children', () => {
@@ -38,7 +46,7 @@ test('add', () => {
   node.add({x: 10000, y: 0})
   expect(node.childrenData.length).toBe(4)
   expect(p.__belong).toBe(node)
-  node.add({x: 10, y: 10})
+  node.add([{x: 10, y: 10}])
   expect(node.childrenData.length).toBe(0)
   expect(node.children.length).toBe(4)
   expect(node.children[2].childrenData.length).toBe(2)
@@ -64,6 +72,29 @@ test('extent', () => {
   expect(node.top_right).toEqual([90, 100])
   expect(node.width).toBe(90)
   expect(node.height).toBe(90)
-  node.extent(-10, 20)
+  node.extent(-10, 120)
   expect(node.bottom_left).toEqual([-10, 10])
+  expect(node.top_right).toEqual([90, 120])
+})
+
+test('get data', () => {
+  const node = new TreeNode([0, 0], [100, 100])
+  const p1 = {x: 60, y: 60}
+  const p2 = {x: 10, y: 60}
+  const p3 = {x: 60, y: 10}
+  node.add([p1, p2, p3])
+  expect(node.getData().length).toBe(3)
+  expect(node.getData()[0]).toBe(p1)
+})
+
+test('get all data', () => {
+  const node = new TreeNode([0, 0], [100, 100])
+  const p1 = {x: 60, y: 60}
+  const p2 = {x: 10, y: 60}
+  const p3 = {x: 60, y: 10}
+  node.add([p1, p2, p3])
+  expect(node.getAllData().length).toBe(3)
+  expect(node.getAllData()[0]).toBe(p1)
+  node.add([{x: 50, y: 50}, {x: 90, y: 90}])
+  expect(node.getAllData().length).toBe(5)
 })

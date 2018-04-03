@@ -46,7 +46,15 @@ export default class Quadtree {
     return this
   }
 
+  /**
+   * 添加单个数据
+   * @param data
+   */
   add(data) {
+    const {x, y} = data
+    if (!this.root.isInArea(x, y)) {
+      const dimension = this.root.whichDimension(x, y)
+    }
     this.root.add(data)
   }
 

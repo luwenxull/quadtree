@@ -37,35 +37,37 @@ export default class TreeNode {
 
   /**
    * 添加数据
-   * @param point
+   * @param points
    * @return {TreeNode}
    */
-  add(point) {
-    if (isValidNum(point.x) && isValidNum(point.y)) {
-      if (this.isInArea(point.x, point.y)) {
-        const dimension = this.whichDimension(point.x, point.y)
-        if (dimension === 0 /*添加给自己*/) {
-          this.selfData.push(Object.assign(point, {
-            __belong: this
-          }))
-        } else {
-          if (this.children) {
-            // 交给子节点处理
-            this.children[dimension - 1].add(point)
-          } else {
-            // 暂时添加到自己的数据集
-            this.childrenData.push(Object.assign(point, {
-              __belong: this // 子节点的add方法会更新这个字段
+  add(points) {
+    [].concat(points).forEach(point => {
+      if (isValidNum(point.x) && isValidNum(point.y)) {
+        if (this.isInArea(point.x, point.y)) {
+          const dimension = this.whichDimension(point.x, point.y)
+          if (dimension === 0 /*添加给自己*/) {
+            this.selfData.push(Object.assign(point, {
+              __belong: this
             }))
-            if (this.childrenData.length > this.max) {
-              this.split()
+          } else {
+            if (this.children) {
+              // 交给子节点处理
+              this.children[dimension - 1].add(point)
+            } else {
+              // 暂时添加到自己的数据集
+              this.childrenData.push(Object.assign(point, {
+                __belong: this // 子节点的add方法会更新这个字段
+              }))
+              if (this.childrenData.length > this.max) {
+                this.split()
+              }
             }
           }
         }
+      } else {
+        throw new Error(`x and y must be number!`)
       }
-    } else {
-      throw new Error(`x and y must be number!`)
-    }
+    })
     return this
   }
 
@@ -96,6 +98,7 @@ export default class TreeNode {
 
   /**
    * 判断属于哪个象限
+   * 只能center相比，不计算是否落在范围内
    * @param x
    * @param y
    * @return {number}
@@ -137,11 +140,12 @@ export default class TreeNode {
    * 判断一个点是否落在该区域
    * @param x
    * @param y
+   * @param extraSpace
    * @return {boolean}
    */
-  isInArea(x, y) {
-    return x >= this.bottom_left[0] && x <= this.bottom_left[0] + this.width
-      && y >= this.bottom_left[1] && y <= this.bottom_left[1] + this.height
+  isInArea(x, y, extraSpace = 0) {
+    return x >= this.bottom_left[0] - extraSpace && x <= this.top_right[0] + extraSpace
+      && y >= this.bottom_left[1] - extraSpace && y <= this.top_right[1] + extraSpace
   }
 
   /**
@@ -156,13 +160,15 @@ export default class TreeNode {
   /**
    * 获取所有是元素
    * 包括子节点的
+   * @return Array
    */
   getAllData() {
-    let all = this.getData()
+    let all = []
     this.visit(node => {
       all = all.concat(node.getData())
       return true
     })
+    return all
   }
   
   /**
@@ -199,6 +205,9 @@ export default class TreeNode {
    * @param y
    */
   extent(x, y) {
+    /**
+     * 重设边界
+     */
     let [minX, minY] = this.bottom_left
     let [maxX, maxY] = this.top_right
     minX = Math.min(minX, x)
@@ -206,5 +215,12 @@ export default class TreeNode {
     maxX = Math.max(maxX, x)
     maxY = Math.max(maxY, y)
     this.setBaseSpaceData([minX, minY], [maxX, maxY])
+
+    // 清空并重置
+    const allData = this.getAllData()
+    this.selfData = []
+    this.childrenData = []
+    this.children = null
+    this.add(allData)
   }
 }
